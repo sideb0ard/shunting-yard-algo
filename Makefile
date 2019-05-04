@@ -1,7 +1,7 @@
 CC=clang++
 CPPFLAGS=-std=c++17
-DEPS=
-OBJ = shunty.cpp
+DEPS= shunty.hpp
+OBJ = shunty.cpp shunty-main.cpp
 INC=-I${HOME}/Code/range-v3/include/
 
 %.o: %.c $(DEPS)

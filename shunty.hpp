@@ -1,7 +1,7 @@
 #include <stack>
 #include <string>
 
-template <typename T> void show_stack(std::stack<T> s);
+template <typename T> void show_stack(std::stack<T> s)
 {
     while (!s.empty())
     {
@@ -26,36 +26,51 @@ enum class SymbolAssociativity
     RIGHT
 };
 
-struct Symbol
+enum class Aryness
 {
-    Symbol(SymbolType type, int value);              // NUMBER
-    Symbol(SymbolType type) : type{type};            // LEFT or RIGHT PARENS
-    Symbol(SymbolType type, std::string identifier); // OP
-    Symbol(SymbolType type);                         // TEE_TOKEN
+    UNARY,
+    BINARY
+};
 
-    SymbolType type;
+enum class OperatorType
+{
+    LEFT_SHIFT,
+    RIGHT_SHIFT,
+    XOR,
+    OR,
+    NOT,
+    AND,
+    PLUS,
+    MINUS,
+    MULTIPLY,
+    DIVIDE,
+    MODULO,
+    UNUSED, // for TEE and PARENS
+    NUM_OPS
+};
+
+class Symbol
+{
+  public:
+    Symbol(SymbolType type, int value); // NUMBER
+    Symbol(SymbolType type, std::string identifier,
+           OperatorType op_type); // OP
+    SymbolType sym_type;
 
     // used if type is NUMBER
     int value;
 
     // used if type is OP
-    std::string identifier;
+    OperatorType op_type;
+    std::string identifier; // used for print
     std::function<int(int, int)> func;
     int precedence;
     SymbolAssociativity associativity;
+    Aryness ary;
 };
 
-std::ostream &operator<<(std::ostream &out, const Symbol &s)
-{
-    if (s.type == SymbolType::NUMBER)
-        out << s.value;
-    else if (s.type == SymbolType::OP)
-        out << s.identifier;
-    else if (s.type == SymbolType::LEFT_PARENS)
-        out << " ( ";
-    else if (s.type == SymbolType::RIGHT_PARENS)
-        out << " ) ";
-    return out;
-}
+std::ostream &operator<<(std::ostream &out, const Symbol &s);
 
-std::stack<Symbol> convert_to_infix(const std::string &line);
+std::stack<Symbol> convert_to_infix(std::vector<Symbol>);
+
+std::vector<Symbol> extract_symbols_from_line(const std::string &line);
